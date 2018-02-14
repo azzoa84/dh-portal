@@ -1,0 +1,11 @@
+@CHARSET "UTF-8";
+
+@font-face {
+    font-family: "Nanum Gothic";
+    font-style: normal;
+    font-weight: 500;
+    src: url(fonts/NanumGothic-Regular.eot); /* IE9 Compat Modes */
+    src: url(fonts/NanumGothic-Regular.eot?#iefix) format("embedded-opentype"), /* IE6-8 */
+         url(fonts/NanumGothic-Regular.woff) format("woff"), /* Mordern Browsers */
+         url(fonts/NanumGothic-Regular.ttf) format("truetype"); /* If not support woff */
+}

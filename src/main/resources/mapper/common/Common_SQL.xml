@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common">
+	<resultMap id="searchResult1" type="potalMap"></resultMap>
+	<resultMap id="searchResult2" type="potalMap"></resultMap>
+	
+	<select id="logChk" statementType="CALLABLE" parameterType="potalMap" resultMap="searchResult1">
+		{ call fpLogin 
+			(
+				'Login',
+				#{userId},
+				#{password},
+				@p_error_code = #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=java.lang.String},
+				@p_return_str = #{returnStr, mode=OUT, jdbcType=VARCHAR, javaType=java.lang.String}
+			)
+        }
+	</select>
+	
+	<select id="userMenu" statementType="CALLABLE" parameterType="potalMap" resultMap="searchResult1">
+		{ call fpUserMenu 
+			(
+				#{workType}
+			)
+        }
+	</select>
+	
+	<select id="directSP" statementType="CALLABLE" parameterType="potalMap" resultMap="searchResult1">
+		{ call #{spCall} 
+			(
+			<foreach item="value" index="key" collection="params" open="" close="" separator=",">
+            	#{value, mode=IN, jdbcType=VARCHAR, javaType=java.lang.String}
+		    </foreach>
+		    	,
+		    	@p_error_code = #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=java.lang.String},
+				@p_return_str = #{returnStr, mode=OUT, jdbcType=VARCHAR, javaType=java.lang.String}
+			)
+        }
+	</select>
+</mapper>

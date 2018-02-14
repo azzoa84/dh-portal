@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included> 
+ 	<property resource="comm.properties"/> 	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>	
+	<property name="LOG_DIR" value="D:\\apache-tomcat-7.0.73_dev\\logs\\dskr\\mr" />	
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}\dskr.mr.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}\dskr.mr.%d{yyyy-MM-dd}.log</fileNamePattern>
+ 			<maxFileSize>100MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>	
+    <logger name="org.springframework" level="info"/>
+    <logger name="ubsales" level="info"/>
+	<root level="info">
+		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="FILE"/>
+	</root>	
+</included>

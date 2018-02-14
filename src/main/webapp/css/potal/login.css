@@ -1,0 +1,48 @@
+@charset "utf-8";
+.center {text-align: center;}
+
+.login_wrapper {padding-top: 30px;}
+.login_wrapper .login { position: relative; width:100%; margin-top: 10px; padding:0 10px;}
+.login_wrapper .login h4 { text-align: center; font-size: 32px; color: #4f4b6c; vertical-align: middle;}
+.login_wrapper .login h4 img {vertical-align: middle;}
+.login_wrapper .login > p { line-height:16px; text-align: center; margin-top: 10px; color: #000000; font-weight: bold;}
+.login_wrapper .login > img { display: none;}
+
+.login_wrapper .login .content { padding:20px 0 25px;margin: 35px 0 100px; text-align: center;    border-top: 2px solid #6d6d6d;    border-bottom: 1px solid #cbcbcb;    background-color: #f6f6f6;}
+.login_wrapper .login .content figure img { width:97px; height:30px;}
+.login_wrapper .login .content figure figurecaption { display: none;}
+
+.login_wrapper .login .content fieldset { position: relative; width:222px; margin: 15px auto 0;}
+.login_wrapper .login .content fieldset dl dt { display: none;}
+.login_wrapper .login .content fieldset dl dd { text-align: center;height: 44px;}
+.login_wrapper .login .content fieldset dl dd input { width:222px; height: 35px; font-size: 13px;ncolor: #555; padding-left: 10px; border: 1px solid #00b4ed; border-radius: 3px;}
+.login_wrapper .login .content fieldset button { width:100%; height:33px; line-height: 33px; background-color: #e70012; font-size: 14px; color: #fff; font-weight: bold;}
+
+.login_wrapper footer {width: 100%; padding:0 0 30px 0;  margin: 0 auto; text-align: center}
+.login_wrapper footer address { padding:5px 10px 0; line-height: 18px; font-size: 12px; color: #adadad; border-top: 1px solid #e3e3e3;}
+.login_wrapper footer address a { font-size:12px; color: #adadad;}
+.login_wrapper footer p { margin-top: 6px; font-size:11px; color:#adadad;}
+
+@media all and (min-width: 769px)  { 
+	.login_wrapper .login{ margin: 110px auto 0;}
+	.login_wrapper .login h4 {text-align:left;}
+	/* .login_wrapper .login > p {text-align: left;} */
+	.login_wrapper .login > img { display:block; position: absolute; right:0; top:16px;}
+	
+	.login_wrapper .login .content { padding:40px 0 50px;}
+	.login_wrapper .login .content figure img { width: auto; height: auto;}
+	.login_wrapper .login .content figure figurecaption { display: inline; margin-left:20px;}
+	
+	.login_wrapper .login .content fieldset{ width: 405px;}
+	.login_wrapper .login .content fieldset dl { clear: left; overflow: hidden;}
+	.login_wrapper .login .content fieldset dl dd { text-align: left;}
+	.login_wrapper .login .content fieldset dl dt { display:block; float:left; width:80px; height: 44px; padding-top:11px; text-align:left;}
+	.login_wrapper .login .content fieldset button{ display: block; position: absolute; right: 0; top: 0;width: 93px; height: 77px;}
+	
+	.login_wrapper footer address { padding:15px 0 0 0;}
+}
+
+@media all and (min-width: 1025px) {
+	.login_wrapper .login{ width:1000px;}
+}
+

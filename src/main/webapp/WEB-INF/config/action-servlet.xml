@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DispatcherServlet application context for Application's web tier. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+    http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+	<!-- use-default-filters="false"라는 값을 주게되면 이와 같은 어노테이션을 자동으로 검색하지 않겠다는 뜻이 
+		된다. <context:include-filter> 태그에 해당하는 어노테이션만 검색하고 bean을 등록시켜 준다. 여기서는 Controller 
+		어노테이션만 검색을 한 것 나머지 @Service, @Repository, @Component 어노테이션은 다른곳에서 component-scan을 
+		하게 할 것 이는 root context와 servlet context의 차이때문에 그렇다 -->
+	<!-- <context:component-scan base-package="potal" use-default-filters="false"> -->
+	<!-- ControllerAdvice를 사용하기 위해서  <mvc:annotation-driven/> 선언해 준다 -->
+	<mvc:annotation-driven/>
+	<context:component-scan base-package="potal">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+	<!-- HandlerMethodArgumentResolver 를 위한 추가 -->
+	<!-- <mvc:annotation-driven> <mvc:argument-resolvers> <bean class="potal.common.resolver.CustomMapArgumentResolver"></bean> 
+		</mvc:argument-resolvers> </mvc:annotation-driven> -->
+	
+
+	<!-- aop를 위해 만든 LoggerAspect 클래스 등록 <aop:aspectj-autoproxy/>를 사용했었는데 @Aspect 
+		어노테이션을 통해서 bean을 등록시켜주는 역할 -->
+	<!-- <aop:aspectj-autoproxy />
+	<bean id="loggerAspect" class="potal.common.logger.LoggerAspect" /> -->
+
+	<!-- @RequestMapping 어노테이션을 처리 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+
+	<!-- ViewResolver 설정 -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />
+
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
+		  p:order="1" p:viewClass="org.springframework.web.servlet.view.JstlView"
+		  p:prefix="/WEB-INF/jsp/" p:suffix=".jsp">
+	</bean>
+	
+	<!-- 각종 bean 설정 -->
+	<bean id="jsonView" class="net.sf.json.spring.web.servlet.view.JsonView"/>
+	
+	
+	<!-- <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="defaultErrorView" value="common/error"/>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="org.springframework.dao.DataAccessException">common/dataAccessFailure</prop>
+                <prop key="org.springframework.transaction.TransactionException">common/transactionFailure</prop>
+                <prop key="egovframework.rte.fdl.cmmn.exception.EgovBizException">common/egovBizException</prop>
+                <prop key="org.springframework.security.AccessDeniedException">common/accessDenied</prop>
+            </props>
+        </property>
+    </bean> -->
+
+	<mvc:resources mapping="/css/**" location="/css/"
+		cache-period="86400" />
+	<mvc:resources mapping="/img/**" location="/img/"
+		cache-period="86400" />
+	<mvc:resources mapping="/js/**" location="/js/"
+		cache-period="86400" />
+
+	<mvc:interceptors>
+		<bean class="potal.common.handler.CommonLogHandler" />
+		<bean class="potal.common.handler.CommonInjectHandler" />
+	</mvc:interceptors>
+
+	<!-- <mvc:interceptors> <mvc:interceptor> <mvc:mapping path="/**"/> <bean 
+		id="loggerInterceptor" class="potal.common.logger.LoggerInterceptor"></bean> 
+		</mvc:interceptor> </mvc:interceptors> -->
+</beans>

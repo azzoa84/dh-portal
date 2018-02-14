@@ -1,0 +1,183 @@
+@media (max-width: 780px) {
+  body.menu-open {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 20;
+    overflow-y: hidden;
+  }
+  body.menu-open .block-panel {
+    display: block;
+  }
+  body.menu-open .body .menu-wrap {
+    left: 0;
+  }
+  body.menu-open .body .menu-wrap ul.menu-main > li > a {
+    width: 300px;
+    height: 45px;
+    padding-left: 15px;
+  }
+  body.menu-open .body .menu-wrap ul.menu-sub li > a {
+    height: 35px;
+    padding-left: 45px;
+  	padding-right: 5px;
+  	background: url("../../../img/submenu_icon.png") no-repeat left 35px center;
+  }
+  
+  .button-group {
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .header {
+    padding: 0 15px;
+    justify-content: space-between;
+  }
+  .header .login-info {
+    display: none;
+  }
+  
+  .header > div.menu_icon,
+  .header > div.home_icon {
+    width: 60px;
+    height: 60px;
+    display: inline;
+    cursor: pointer;
+    
+  }
+  .header > div.menu_icon {
+    background: url("../../../img/menu_icon.png") no-repeat center center;
+    
+  }
+  .header > div.home_icon {
+    background: url("../../../img/home_icon.png") no-repeat center center;
+    
+  }
+
+  .header-bar {
+    height: 4px;
+  }
+  .body .menu-wrap {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 20;
+    overflow-y: auto;
+    transition: all 0.3s;
+  }
+  .body .menu-wrap .login-info {
+    position: relative;
+    display: block !important;
+    height: 60px;
+    background-color: #00b4ed;
+  }
+  .body .menu-wrap .login-info img {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+  }
+  .body .menu-wrap .login-info span {
+    display: block;
+    padding-left: 60px;
+    font-size: 13px;
+    padding-top: 12px;
+    color: #fff;
+  }
+  .body .menu-wrap .login-info button {
+    display: inline-block;
+    margin-left: 60px;
+    text-align: left;
+    margin-top: 5px;
+    height: auto;
+    width: auto;
+    border: 0;
+    background-color: transparent;
+    font-size: 12.5px;
+    color: #fff;
+    text-decoration: underline;
+  }
+  .body .menu-wrap .login-info .menu-close {
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 17.5px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    background: url("../../../img/menu_close.png") no-repeat center center;
+    background-size: contain;
+  }
+  .body .contents {
+    min-height: -webkit-calc(100vh - 65px - 65px);
+    min-height: -moz-calc(100vh - 65px - 65px);
+    min-height: calc(100vh - 65px - 65px);
+    padding-left: 0;
+  }
+  .body .contents:before {
+    width: 0;
+  }
+  .body .contents .page-location {
+    display: none;
+  }
+  .body .contents .page-tabs {
+    padding: 15px 15px 0 15px;
+    /*justify-content: space-between;*/
+  }
+  .body .contents .page-tabs > button {
+    width: -webkit-calc(25% - 5px);
+    width: -moz-calc(25% - 5px);
+    width: calc(25% - 5px);
+    min-width: auto;
+    /*margin: 0;*/
+  }
+  .body .contents .content {
+    padding: 15px;
+  }
+  .body .contents .content .conditions {
+    border: 0;
+    padding: 0;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .body .contents .content .conditions > div {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: calc(50% - 5px);
+    margin: 0 5px 10px 0;
+  }
+  .body .contents .content .conditions > div:nth-child(2n) {
+    margin-right: 0;
+  }
+  .body .contents .content .box-wrap {
+    display:block;
+  }
+  .body .contents .content .box-wrap .box {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+  .body .contents .content .box-wrap .box:first-of-type {
+    margin-top: 0;
+  }
+  .body .contents .swiper-container-horizontal > .swiper-pagination-bullets, .body .contents .swiper-pagination-custom, .body .contents .swiper-pagination-fraction {
+    width: 100%;
+  }
+  .body .contents .box-content > img {
+    width: 100%;
+  }
+  
+  .body .contents .content .table-wrap table th{
+    font-size: 12.5px;
+    font-weight: normal;
+  }
+}

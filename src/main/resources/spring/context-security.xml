@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<beans:bean id="userService" class="potal.common.service.UserService" /> 
+	
+	<beans:bean id="authenticationSuccessHandler" class="potal.common.handler.AuthenticationSuccessHandler" />
+	<beans:bean id="authenticationFailureHandler" class="potal.common.handler.AuthenticationFailureHandler" >
+		<beans:property name="useForward" value="true" />
+		<beans:property name="defaultFailureUrl" value="/login.jsp"/>
+	</beans:bean>
+		
+	<!-- auto-config='true' 를 설정한것만으로 기본 로그인페이지/ HTTP 기본인증 / 로그아웃기능등을 제공한다. 
+	     use-expressions="true" 는 SpEL 을 사용한다는 의미이다.   
+	     use-expressions="true" 를 설정하지 않으면 default 가 false 이다. 이럴때는 SpEL을 사용하지 않는다.-->
+	     
+	<!-- use-expressions="true" 로 설정하면 SpEL을 사용해서 작성을 해야한다. 그렇지 않으면 에러가 발생한다. -->     
+	<http auto-config='true'  use-expressions="true">  
+		<!-- URL에 접근하기 위한 권한설정 -->
+		<intercept-url pattern="/login*" access="permitAll" />				<!-- /login 으로는 모두 허용해준다./login 을 막아놓으면 안되니깐~ --> 	
+		<intercept-url pattern="/css/**" access="permitAll" />	
+		<intercept-url pattern="/img/**" access="permitAll" />	
+		<intercept-url pattern="/js/**" access="permitAll" />	
+		<intercept-url pattern="/lib/**" access="permitAll" />
+		<intercept-url pattern="/resources/**" access="permitAll" /> 		<!-- 리소스도 허용 -->
+		<intercept-url pattern="/**" access="hasRole('ROLE_USER')" /> 		<!-- 나머지는 모두 ROLE_USER 권한을 가진사람만 허용해준다.
+																				 hasRole()SpEL로 스프링 표현언어이다,use-expressions가 false이면 사용불가 -->
+			<!-- form-login 사용자이름과 비밀번호를 가지고있는 폼기반 인증방법을 사용한다. 
+				 login-page="/login"  를 설정하여 사용자가 만든 로그인페이지를 스프링에게 알려준다. 이거 설정안하면 스프링이 만들어준것을 사용. 
+				 username-parameter, password-parameter 이거 설정안해도 된다. 나중에 login.jsp 페이지에서 FORM 안에 들어갈 name 을 여기서 지정한것으로 바꾸어준다.
+				 authentication-failure-url - 실패시 호출해줄 URL (login 페이지에 error 파라미터를 보내준다) 
+				 always-use-default-target='true' 이거 안하면 로그인성공해도 /monitering 로 제대로 안가더라
+			-->
+			
+			<form-login login-page="/login.jsp"                    
+				authentication-failure-handler-ref="authenticationFailureHandler"
+				authentication-success-handler-ref="authenticationSuccessHandler"
+			/> 
+	</http> 
+
+	<!-- 인증처리를 위한 최상위 태그 -->
+    <authentication-manager> 
+    	<!-- user-service-ref="memberService" 사용자이름/비밀번호를 제공해줄 서비스 등록 -->
+		<authentication-provider user-service-ref="userService"/>
+	</authentication-manager>
+</beans:beans>
