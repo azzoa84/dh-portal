@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8"%>zzz
+<%@ page contentType="text/html; charset=UTF-8"%>
 <div>
 <button type="button" class="btn btn-success" ng-click="file.testFileUpload();">파일</button>
 <input type="file" id="testFileUpload" name="files" style="display:none" multiple>
