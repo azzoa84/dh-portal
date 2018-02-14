@@ -18,6 +18,7 @@
 	<title>Potal</title>
     <%@ include file="/WEB-INF/jsp/include/include-header.jsp" %>
     <script>
+    	console.log('3');
 		var g_webRoot = '${pageContext.request.contextPath}/';
 		
 		<%
