@@ -1,15 +1,27 @@
 package potal.common.controller;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import potal.common.model.UserModel;
+import potal.common.util.Utility;
+import potal.core.service.AddressService;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +31,9 @@ import javax.servlet.http.HttpSession;
 @SessionAttributes(types = UserModel.class)
 public class URLController {
 	Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	@Resource(name = "systemProp")
+	private Properties systemProp;		/** SystemProperties */
 	
 	@RequestMapping(value = "/main.do")
     public String main(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception
@@ -80,5 +95,42 @@ public class URLController {
 			}
 		}
 		return "redirect:/login.jsp";
+	}
+	
+	@RequestMapping(value = "/address.do")
+	public ResponseEntity<String> getAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session){
+		log.info("Address start");
+		String key = systemProp.getProperty("ADDRESS.API.KEY");
+		AddressService svc = new AddressService(key, request);
+		
+		// Utility.getJSONResponse(commonDAO.list("hanall", "hanall.selectCardList", map))
+		//return new ResponseEntity<String>(svc.getGeoCode(), HttpStatus.OK);
+		return Utility.getJSONResponse(svc.getAddress());
+	}
+	
+	@RequestMapping(value = "/test.do")
+	@SuppressWarnings("rawtypes")
+	public void test(HttpServletRequest request, HttpServletResponse response){
+		String jsonData = request.getParameter("p1");	// var param = {data: [{a1: "에이", a2: "에이투"}, {a1: "비원", a2: "비투"}]};
+		try {
+			JSONParser jsonParser = new JSONParser();
+			JSONObject jsonObject = (JSONObject)jsonParser.parse(jsonData);
+			JSONArray bookInfoArray = (JSONArray) jsonObject.get("data");
+			System.out.println(bookInfoArray.size());
+			
+			for(int i=0; i<bookInfoArray.size(); i++){
+				JSONObject bookObject = (JSONObject) bookInfoArray.get(i);
+				
+				for (Object e : bookObject.entrySet()) {
+					Map.Entry entry = (Map.Entry) e;
+					System.out.println(entry.getKey() + " : " +  entry.getValue());
+				}
+            }
+			
+	
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

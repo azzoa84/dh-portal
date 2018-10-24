@@ -6,64 +6,73 @@
 */
 package potal.core.service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import potal.common.common.PotalParamMap;
-import potal.common.service.ComnConst;
-import potal.common.service.ServiceMap;
+import potal.common.service.ExcelHeaderConst;
+import potal.core.model.UploadResult;
 
 /**  
  * @Class Name : ExcelDataUploadService.java
  * @Description : 
- * @Modification Information  
- * @
- * @  수정일      수정자              수정내용
- * @ ---------   ---------   -------------------------------
- *   2017.09.25	 JaeHwan	 신규 생성
- * @author UBCare CRM R&D TF
- * @since 2017.09.25
- * @version 1.0
- * @see
  * 
  * Copyright (C) by UBCARE All right reserved.
  */
 public class ExcelDataUploadService extends AbstractXLFileUploadService 
 {
-	private String[] testParams = { "p1", "p2", "p3", "p4"};
-	
 	@Override
-	protected int getNewFileId(MultipartFile file, PathInfo savePath)
-	{		
-		log.info("--------------> ExcelDataUploadService : getNewFileId()");
-		int intResult = 0;
-		/*Sheet sheet = getSheet(file, savePath, 0);
+	public UploadResult saveFiles() {
+		log.info("--------------> Excel Upload Start!!");
+		log.info("--------------> excelDataFiles()");
 		
-		String[] arsParam = (savePath.params).split(",");
-		String strType = arsParam[1];
-		String strFileName = file.getOriginalFilename();
-		String strRowCount = String.valueOf(sheet.getLastRowNum());
-		String userId = request.getSession().getAttribute("UserID").toString();
+		int fileId;
+		PathInfo uploadInfo;
+		super.result = new UploadResult();
 		
-		PotalParamMap ubBulkParams = new PotalParamMap();
-		ubBulkParams.put(ComnConst.DIRECT_SP_NAME, "P_sysBulkDataInfo_S");
-		ubBulkParams.put(ComnConst.DIRECT_SP_PARAM, new String[] { strType, strFileName, strRowCount, userId });
-		
-		List<PotalParamMap> saveResult;
-		saveResult = commonDAO.list(ServiceMap.getQueryId(ServiceMap.AJAX_DIRECT_SP), ubBulkParams);
-		
-		String strNewId = ((List<PotalParamMap>)saveResult.get(0)).get(0).get("new_id").toString();
-		if(strNewId != null && "".equals(strNewId) == false)
+		for(int i = 0; i < files.size(); i++)
 		{
-			intResult = saveSheetData(strNewId, arsParam, sheet);
-		}*/
-		return intResult;
+			MultipartFile file = files.get(i);
+			if(!file.isEmpty())
+			{
+				uploadInfo = getUploadPath(file.getOriginalFilename());
+				uploadInfo.params = (String)request.getParameter("params");
+				fileId = saveFile(file, uploadInfo);
+				List<PotalParamMap> dataList = new ArrayList<PotalParamMap>();
+				dataList = uploadExcel(file, uploadInfo);
+				
+				System.out.println(dataList);
+				
+				if(fileId > 0)
+				{
+					result.oriFileNameList.add(uploadInfo.originName);
+					result.newFileNameList.add(uploadInfo.saveName);
+					result.fileURLList.add(uploadInfo.getSaveURL());
+					result.fileIDList.add(String.valueOf(fileId));
+					result.fileSizeList.add(String.valueOf(file.getSize()));
+					result.dataList.add(dataList);
+				}
+			}
+		}
+		
+		return super.result;
+	}
+	
+	protected List<PotalParamMap> uploadExcel(MultipartFile file, PathInfo savePath)
+	{		
+		log.info("--------------> ExcelDataUploadService : uploadExcel()");
+		int intResult = 0;
+		Workbook book = getBook(file, savePath);
+		
+		String arsParam = savePath.params;
+		
+		return saveSheetData(arsParam, book);
 	}
 	
 	@Override
@@ -77,27 +86,62 @@ public class ExcelDataUploadService extends AbstractXLFileUploadService
 	 * @param sheet
 	 * @return
 	 */
-	protected int saveSheetData(String strNewId, String[] arsParams, Sheet sheet)
+	protected List<PotalParamMap> saveSheetData(String arsParams, Workbook book)
 	{
 		log.info("**saveSheetData() START");
 		long start = System.currentTimeMillis();
 		
-		//int intReturnCode = ComnConst.RETURN_UNKNOWN;
+		Sheet sheet = null;
+		//Map<String, Object> mpParam = new HashMap<String, Object>();
+		PotalParamMap mpParam = new PotalParamMap();
+		PotalParamMap mpRow = new PotalParamMap();
+		
+		List<PotalParamMap> list = new ArrayList<PotalParamMap>();
+		
+		String userId = request.getSession().getAttribute("userid").toString();
+		
 		int intReturnCode = 1;
 		int intInsertCount = 0;
 		int intRawSelectCount = -1;
 		int intRealSelectCount = -1;		
-		int intExcelRowCount = sheet.getLastRowNum();
-		
-		Map<String, Object> mpParam = new HashMap<String, Object>();
-		Map<String, Object> mpRow = new HashMap<String, Object>();
-		String[] arsColumns = getHeaderColumns(sheet);
-		String yyyymm = arsParams[0];
-		String strType = arsParams[1];
-		String userId = request.getSession().getAttribute("UserID").toString();
-		
+						
+		try 
+		{
+			String[][] arsColumns = getExcelHeader(arsParams);
+			
+			for(int sheetNum = 0; sheetNum < book.getNumberOfSheets(); sheetNum++) 
+			{
+				sheet = book.getSheetAt(sheetNum);
+				
+				if (sheet == null) continue;
+				
+				int nRowEndIndex   = sheet.getLastRowNum();			// ROW 개수
+				String sheetNm = sheet.getSheetName();				// sheet 이름 가져오기
+								
+				for(int intRowNum = 1; intRowNum <= nRowEndIndex ; intRowNum++)
+				{
+					mpRow = rowToMap(sheet.getRow(intRowNum), arsColumns[sheetNum]);
+					
+					if(mpRow != null)
+					{
+						// yyyymm rowToMap에서 데이터 가공 시 number로 인식하여 소수점이 추가되어 소수점 제거 후 비교
+						//String yyyymmStr = mpRow.get("yyyymm") == null ? "" : (mpRow.get("yyyymm").toString()).substring(0, 6);
+						//mpRow.put("yyyymm", yyyymmStr);
+						list.add(mpRow);
+					}
+				}
+			}
+			
+			//int intReturnCode = ComnConst.RETURN_UNKNOWN;
+			
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+			log.info(String.format("--Excel Sales Data Save failed - %s", ex.toString()));
+		}
 		/*
-		if(ComnConst.SAR_FORECASTING.equals(strType))		strType = "SARF";
+		if(ComnConst.EXCEL_TEST.equals(strType))		strType = "SARF";
 		else if(ComnConst.SAR_ALL_DIFF.equals(strType))		strType = "SARAD";
 		else if(ComnConst.SAR_POINT_SYSTEM.equals(strType))	strType = "SARPS";
 		else if(ComnConst.SAR_UBIST.equals(strType))		strType = "SARUB";
@@ -286,8 +330,9 @@ public class ExcelDataUploadService extends AbstractXLFileUploadService
 		
 		*/
 		log.info("**saveSheetData() END");
-		return intReturnCode;
+		return list;
 	}
+	
 	
 	/**
 	 * Get Excel Header Columns
@@ -321,16 +366,17 @@ public class ExcelDataUploadService extends AbstractXLFileUploadService
 		return arsColumns;
 	}
 	
-	protected Map<String, Object> rowToMap(Row row, String[] columns)
+	protected PotalParamMap rowToMap(Row row, String[] columns)
 	{
-		Map<String, Object> resultMap = null;
+		PotalParamMap resultMap = null;
 		Cell cell;
 		int cellCnt;
+		int nullCnt = 0;
 		Object value;
 		
 		if(row != null)
 		{
-			resultMap = new HashMap<String, Object>();
+			resultMap = new PotalParamMap();
 
 			cellCnt = columns.length;
 
@@ -360,33 +406,33 @@ public class ExcelDataUploadService extends AbstractXLFileUploadService
 						value = "";
 						break;
 					}
+					
+					if (value != null)
+					{
+						nullCnt++;
+					}
+					
 					resultMap.put(columns[i], value);
 				}
 			}
+			
+			if (nullCnt != cellCnt)		resultMap = null;	
 		}
 		return resultMap;
 	}
 	
-	/**
-	 * Excel Data Upload Log 저장
-	 * @param arsParams
-	 * @return
-	 */
-	public String saveLog(String[] arsParams)
-	{
-		String strLogSeq = "";
+	public String[][] getExcelHeader(String param)
+    {
+    	String[][] excelHeader = null;
+    	
+    	if (param.equals("TEST"))
+    	{
+    		excelHeader = ExcelHeaderConst.TEST;
+    	}
+    	
+    	return excelHeader;
+    }
 		
-		PotalParamMap ubLogParams = new PotalParamMap();
-		ubLogParams.put(ComnConst.DIRECT_SP_NAME, "P_sysExcelDataLog_S");
-		ubLogParams.put(ComnConst.DIRECT_SP_PARAM, arsParams);
-		
-		List<PotalParamMap> saveResult;
-		saveResult = commonDAO.list(ServiceMap.getQueryId(ServiceMap.AJAX_DIRECT_SP), ubLogParams);
-		strLogSeq = ((List<PotalParamMap>)saveResult.get(0)).get(0).get("seq").toString();
-		
-		return strLogSeq;
-	}
-	
 	/**
 	 * Upload 결과 값 Script 반환
 	 */
@@ -397,10 +443,7 @@ public class ExcelDataUploadService extends AbstractXLFileUploadService
 		
 		try
 		{
-			buff.append("<script>\n");
-			buff.append(String.format("	var result = %s;\n",  new String(result.getJsonString().getBytes("UTF-8"), "ISO-8859-1")));
-			buff.append("	parent.closeCurrentWindow(result);\n");
-			buff.append("</script>");
+			buff.append(String.format("%s\n",  new String(result.getJsonString().getBytes("UTF-8"), "ISO-8859-1")));
 			return buff.toString();
 		}
 		catch(Exception ex)

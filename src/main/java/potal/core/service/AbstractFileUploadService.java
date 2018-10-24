@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import potal.common.common.PotalParamMap;
 import potal.common.dao.CommonDAO;
+import potal.common.service.ComnConst;
+import potal.common.service.ServiceMap;
 import potal.core.model.UploadResult;
 
 public abstract class AbstractFileUploadService
@@ -67,75 +70,7 @@ public abstract class AbstractFileUploadService
 	
 	public AbstractFileUploadService() { }
 	
-	/**
-	 * 파일 저장
-	 * @return
-	 */
-	public UploadResult saveFiles()
-	{
-		log.info("--------------> File Upload Start!!");
-		log.info("--------------> saveFiles()");
-		
-		int fileId;
-		PathInfo uploadInfo;
-		this.result = new UploadResult();
-		
-		for(int i = 0; i < files.size(); i++)
-		{
-			MultipartFile file = files.get(i);
-			if(!file.isEmpty())
-			{
-				// 파일 생성
-				uploadInfo = getUploadPath(file.getOriginalFilename());
-				
-				if((fileId = saveFile(file, uploadInfo)) > 0)
-				{
-					result.oriFileNameList.add(uploadInfo.originName);
-					result.newFileNameList.add(uploadInfo.saveName);
-					result.fileURLList.add(uploadInfo.getSaveURL());
-					result.fileIDList.add(String.valueOf(fileId));
-					result.fileSizeList.add(String.valueOf(file.getSize()));
-				}
-			}
-		}
-		return this.result;
-	}
-	
-	/**
-	 * 엑셀 업로드시 파일 저장
-	 * @return
-	 */
-	public UploadResult excelDataFiles()
-	{
-		log.info("--------------> Excel Upload Start!!");
-		log.info("--------------> excelDataFiles()");
-		
-		int fileId;
-		PathInfo uploadInfo;
-		this.result = new UploadResult();
-		
-		for(int i = 0; i < files.size(); i++)
-		{
-			MultipartFile file = files.get(i);
-			if(!file.isEmpty())
-			{
-				uploadInfo = getUploadPath(file.getOriginalFilename());
-				uploadInfo.params = (String)request.getParameter("params");
-				
-				if((fileId = saveFile(file, uploadInfo)) > 0)
-				{
-					result.oriFileNameList.add(uploadInfo.originName);
-					result.newFileNameList.add(uploadInfo.saveName);
-					result.fileURLList.add(uploadInfo.getSaveURL());
-					result.fileIDList.add(String.valueOf(fileId));
-					result.fileSizeList.add(String.valueOf(file.getSize()));
-				}
-			}
-		}
-		return this.result;
-	}
-	
-	private PathInfo getUploadPath(String originName)
+	public PathInfo getUploadPath(String originName)
 	{
 		log.info("--------------> getUploadPath() 파일을 저장 경로 설정");
 		File fDir; 
@@ -143,27 +78,31 @@ public abstract class AbstractFileUploadService
 		String logicalPath, physicalPath;
 		
 		String subDir = FILE_SUB_CATEGORY.get(category) == null ? "" : FILE_SUB_CATEGORY.get(category);
-		
+		String uploadRoot = subDir;
 		// DB에 저장될 경로
-		logicalPath = String.format("/%d/%02d/%02d/"
+		logicalPath = String.format("%s/%d/%02d/%02d/"
+				, uploadRoot
 				, today.get(Calendar.YEAR)
 				, today.get(Calendar.MONTH) + 1
 				, today.get(Calendar.DAY_OF_MONTH));
 			
 		// 실제 파일이 저장될 경로
-		physicalPath = String.format("%s/%d/%02d/%02d/"
+		/*physicalPath = String.format("%s/%d/%02d/%02d/"
 				, filePath + subDir
 				, today.get(Calendar.YEAR)
 				, today.get(Calendar.MONTH) + 1
-				, today.get(Calendar.DAY_OF_MONTH));
-				
+				, today.get(Calendar.DAY_OF_MONTH));*/
+		
+		
+		physicalPath = filePath + logicalPath;
+		System.out.println(physicalPath);
 		fDir = new File(physicalPath);
 		if(!fDir.exists()) fDir.mkdirs();
 		
 		return new PathInfo(logicalPath, physicalPath, originName);
 	}
 	
-	private int saveFile(MultipartFile file, PathInfo savePath)
+	public int saveFile(MultipartFile file, PathInfo savePath)
 	{
 		log.info("--------------> saveFile() 파일 생성 ");
 		try
@@ -186,7 +125,33 @@ public abstract class AbstractFileUploadService
 		return 0;
 	}
 	
-	protected abstract int getNewFileId(MultipartFile file, PathInfo savePath);
+	@SuppressWarnings("unchecked")
+	protected int getNewFileId(MultipartFile file, PathInfo savePath)
+	{
+		List<PotalParamMap> saveResult;
+		PotalParamMap param = new PotalParamMap();
+		param.put(ComnConst.DIRECT_SP_NAME, "P_sysAttachFiles_S");
+		param.put(ComnConst.DIRECT_SP_PARAM,
+				new String[] {
+					"N", 
+					"0", 
+					file.getOriginalFilename(), 
+					savePath.getSaveURL(), 
+					String.valueOf(file.getSize()), 
+					request.getSession().getAttribute("userid").toString()} 
+		);
+		
+		saveResult = (List<PotalParamMap>)commonDAO.list(ServiceMap.getQueryId(ServiceMap.AJAX_DIRECT_SP), param);
+		System.out.println("---> " + saveResult);
+		if(saveResult.size() > 0) return Integer.valueOf(saveResult.get(0).get("newId").toString());
+		else return ComnConst.RETURN_CODE_FAIL;
+	}
 
+	/**
+	 * 파일 저장
+	 * @return
+	 */
+	public abstract UploadResult saveFiles();	
+	
 	public abstract String getResultScript();	
 }

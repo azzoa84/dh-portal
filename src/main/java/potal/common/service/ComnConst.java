@@ -29,7 +29,7 @@ public class ComnConst
 	
 	public final static String PARAM_TYPE_BASE = "BASE";
 	public final static String PARAM_TYPE_UBSALES = "UBSALES";
-	
+		
 	public static final int RETURN_CODE_AUTHENTICATE_FAIL	= -1;				/**< 응답코드:인증실패 **/	
 	public static final int RETURN_CODE_FAIL				= 0;				/**< 응답코드:실패 **/
 	public static final int RETURN_CODE_SUCCESS				= 1;				/**< 응답코드:성공**/

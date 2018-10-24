@@ -6,39 +6,41 @@
 */
 package potal.core.service;
 
-import java.util.List;
-
 import org.springframework.web.multipart.MultipartFile;
+import potal.core.model.UploadResult;
 
-import potal.common.common.PotalParamMap;
-import potal.common.service.ComnConst;
-import potal.common.service.ServiceMap;
-
-@SuppressWarnings("unchecked")
 public class FileUploadService extends AbstractFileUploadService 
 {
 	@Override
-	protected int getNewFileId(MultipartFile file, PathInfo savePath)
-	{
-		List<PotalParamMap> saveResult;
-		PotalParamMap param = new PotalParamMap();
-		param.put(ComnConst.DIRECT_SP_NAME, "P_sysAttachFiles_S");
-		param.put(ComnConst.DIRECT_SP_PARAM,
-				new String[] {
-					"N", 
-					"0", 
-					file.getOriginalFilename(), 
-					savePath.getSaveURL(), 
-					String.valueOf(file.getSize()), 
-					request.getSession().getAttribute("userid").toString()} 
-		);
+	public UploadResult saveFiles() {
+		log.info("--------------> File Upload Start!!");
+		log.info("--------------> saveFiles()");
 		
-		saveResult = (List<PotalParamMap>)commonDAO.list(ServiceMap.getQueryId(ServiceMap.AJAX_DIRECT_SP), param);
+		int fileId;
+		PathInfo uploadInfo;
+		super.result = new UploadResult();
+		
+		for(int i = 0; i < files.size(); i++)
+		{
+			MultipartFile file = files.get(i);
+			if(!file.isEmpty())
+			{
+				// 파일 생성
+				uploadInfo = getUploadPath(file.getOriginalFilename());
 				
-		if(saveResult.size() > 0) return Integer.valueOf(saveResult.get(0).get("newId").toString());
-		else return ComnConst.RETURN_CODE_FAIL;
+				if((fileId = saveFile(file, uploadInfo)) > 0)
+				{
+					result.oriFileNameList.add(uploadInfo.originName);
+					result.newFileNameList.add(uploadInfo.saveName);
+					result.fileURLList.add(uploadInfo.getSaveURL());
+					result.fileIDList.add(String.valueOf(fileId));
+					result.fileSizeList.add(String.valueOf(file.getSize()));
+				}
+			}
+		}
+		return super.result;
 	}
-
+	
 	@Override
 	public String getResultScript()
 	{

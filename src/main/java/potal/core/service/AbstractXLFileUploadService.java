@@ -39,18 +39,11 @@ public abstract class AbstractXLFileUploadService extends AbstractFileUploadServ
 {	
 	protected Logger log = LoggerFactory.getLogger(this.getClass());
 	
-	@Override
-	protected int getNewFileId(MultipartFile file, PathInfo savePath) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	protected Sheet getSheet(MultipartFile file, PathInfo savePath, int intSheetNum)
+	protected Workbook getBook(MultipartFile file, PathInfo savePath)
 	{
-		Sheet sheet = null;
-		
 		Workbook book = null;
 		
+		// FileInputStream - 파일로 부터 바이트로 입력받아, 바이트 단위로 출력할 수 있는 클래스
 		FileInputStream fis = null;
 		File fileObj = new File(savePath.getSavePath());
 		try
@@ -61,26 +54,26 @@ public abstract class AbstractXLFileUploadService extends AbstractFileUploadServ
 			if(book == null)
 			{
 				fis.close();
-				return sheet;
+				return book;
 			}
 			
-			sheet = book.getSheetAt(intSheetNum);
-			
 			fis.close();
-			fileObj.delete();
+			
+			// 파일 삭제
+			//fileObj.delete();
 		}
 		catch(IOException ex)
 		{
 			log.info(String.format("Excel upload failed - %s", ex.toString()));
-			return sheet;
+			return book;
 		}
 		catch(Exception ex)
 		{
 			log.info(String.format("Excel upload failed - %s", ex.toString()));
-			return sheet;
+			return book;
 		}
 		
-		return sheet;
+		return book;
 	}
 	
 	protected Workbook checkExcelExt(FileInputStream fis, String fileName)

@@ -145,7 +145,7 @@ public class FileController extends AbstractBaseControler
 	private void uploadExcelProc(FileUploadForm uploadForm,
 				 				HttpServletResponse res,
 		 						HttpServletRequest req,
-		 						AbstractFileUploadService svc) throws IOException, UnsupportedEncodingException
+		 						AbstractXLFileUploadService svc) throws IOException, UnsupportedEncodingException
 	{
 		String filePath = systemProp.getProperty("UPLOAD.DIR");
 		ServletOutputStream stm;
@@ -155,7 +155,7 @@ public class FileController extends AbstractBaseControler
 		svc.setRequest(req);
 		svc.setSubPath("excel");
 		
-		svc.excelDataFiles();
+		svc.saveFiles();
 		
 		res.setHeader("Content-Type", "text/html; charset=utf-8");
 		

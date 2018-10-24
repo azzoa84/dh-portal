@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included> 	
- 	<property resource="comm.properties"/> 	
+ 	<property resource="system.properties"/> 	
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>	
-	<property name="LOG_DIR" value="/var/logs/mr" />	
+	<property name="LOG_DIR" value="/usr/local/project/log" />	
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/dskr-mr.log</file>
+        <file>${LOG_DIR}/potal-mr.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}/dskr-mr.%d{yyyy-MM-dd}.log</fileNamePattern>
  			<maxFileSize>100MB</maxFileSize>

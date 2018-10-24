@@ -9,14 +9,17 @@ package potal.core.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import potal.common.common.PotalParamMap;
 import potal.common.util.Utility;
 
 public class UploadResult implements Serializable
 {
 	private static final long serialVersionUID = -2635215403904667374L;
-	private final HashMap<String, ArrayList<String>> json;
+	private final HashMap<String, Object> json;
 	public final ArrayList<String> oriFileNameList, newFileNameList, fileURLList, fileIDList, contentList, fileSizeList;
+	public final ArrayList<List<PotalParamMap>> dataList;
 	
 	public UploadResult()
 	{
@@ -26,14 +29,16 @@ public class UploadResult implements Serializable
 		fileIDList = new ArrayList<String>();
 		fileSizeList = new ArrayList<String>();
 		contentList = null;
+		dataList = new ArrayList<List<PotalParamMap>>(); 
 		
-		json = new HashMap<String, ArrayList<String>>();
+		json = new HashMap<String, Object>();
 		json.put("oriFileNameList", oriFileNameList);
 		json.put("newFileNameList", newFileNameList);
 		json.put("fileURLList", fileURLList);
 		json.put("fileIDList", fileIDList);
 		json.put("fileSizeList", fileSizeList);
 		json.put("contentList", contentList);
+		json.put("dataList", dataList);
 	}
 	
 	public String getJsonString()
