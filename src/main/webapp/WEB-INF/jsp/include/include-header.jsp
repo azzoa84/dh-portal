@@ -5,7 +5,7 @@
 <link href="${pageContext.request.contextPath}/img/favicon.ico" rel="shortcut icon" type="image/ico">
 
 <link rel="stylesheet" type="text/css" href="<c:url value='/js/lib/external/bootstrap-3.3.2-dist/css/bootstrap.min.css?v=${ncid}'/>" />
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/v4.css?v=${ncid}'/>" />
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/potal/v4.css?v=${ncid}'/>" />
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/datepicker.css?v=${ncid}'/>" />
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/fullcalendar.css?v=${ncid}'/>" />
 
@@ -18,3 +18,5 @@
 
 <script src="<c:url value='/js/lib/external/common/common.js?v=${ncid}'/>"></script>
 <script src="<c:url value='/js/lib/external/common/potal.util.js?v=${ncid}'/>"></script>
+<script src="<c:url value='/js/lib/platform/potalImage.js?v=${ncid}'/>"></script>
+<script src="<c:url value='/js/lib/platform/potalFileBrowser.js?v=${ncid}'/>"></script>
