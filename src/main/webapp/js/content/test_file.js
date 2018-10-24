@@ -41,7 +41,7 @@ function mainController($scope, $timeout, $injector, $filter)
     		}
     		
     		var fileInfo = util.callFileUpload('./fileUpload.do', param);
-    		
+    		console.log(fileInfo);
     		var fileIDList = fileInfo.fileIDList;
     		var fileSizeList = fileInfo.fileSizeList;
     		var fileNameList = fileInfo.oriFileNameList;

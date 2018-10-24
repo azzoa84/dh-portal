@@ -32,7 +32,7 @@ function mainController($scope, $timeout, $injector, $filter)
     	{
     		var param = $scope.createFormData('testExcelUpload');
     		var fileInfo = util.callFileUpload('./excelUpload.do', param);
-    		
+    		console.log(fileInfo);
     		var fileIDList = fileInfo.fileIDList;
     		var fileSizeList = fileInfo.fileSizeList;
     		var fileNameList = fileInfo.oriFileNameList;
@@ -78,7 +78,7 @@ function mainController($scope, $timeout, $injector, $filter)
 		$.each($('#' + id)[0].files, function(i, file) {
 			formData.append('files', file);
 		});
-		
+		formData.append('params', 'TEST');
 		return formData;
 	}
 }

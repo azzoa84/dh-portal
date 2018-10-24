@@ -14,3 +14,11 @@
 		<a id="comm_msg_box_confirm_no_btn" class="btn_l gray_btn">취소</a>
 	</div>
 </div>
+
+<div id="expandImageView" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content center">
+			<img src="about:blank" alt="" id="show-picture">
+		</div>
+	</div>
+</div>

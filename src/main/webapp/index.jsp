@@ -19,7 +19,7 @@
     <%@ include file="/WEB-INF/jsp/include/include-header.jsp" %>
     <script>
     	var g_webRoot = '${pageContext.request.contextPath}/';
-		
+    			
 		<%
 			out.print("document.usrMenu = ");
 			out.print(Utility.getJSONString(request.getSession().getAttribute("userMenu")));
@@ -77,4 +77,7 @@
     <!-- 공통 사용 컴포넌트 -->
 	<%@ include file="/common/comm_element.jsp" %>	
 </body>
+<script>
+	var g_fileBrowser = new FingerFileBrowser();
+</script>
 </html>

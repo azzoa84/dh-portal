@@ -72,7 +72,7 @@ var angular_comm = (function ()
 		        }
 		    };
 		});		
-		mainController.$inject = ['$scope', '$timeout', '$injector', '$filter'];
+		mainController.$inject = ['$scope', '$timeout', '$injector', '$filter', '$sce'];
 	}
 	return module;
 }());
